@@ -12,6 +12,8 @@ from font_source_serif_pro import SourceSerifPro
 
 import socket
 
+import secrets
+
 def wait_for_internet(host="8.8.8.8", port=53, timeout=5):
     while True:
         try:
@@ -50,7 +52,7 @@ CITY_NAME = "Madison, Wisconsin"
 COUNTRYCODE = "US"
 BACKGROUND_PATH = "images/background.png"
 
-UNSPLASH_ACCESS_KEY = ""
+UNSPLASH_ACCESS_KEY = secrets.unsplash_access_key()
 
 
 # ---------------------------
