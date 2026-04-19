@@ -35,7 +35,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=secrets.spotify_client_id(), # secret :)
     client_secret=secrets.spotify_client_secret(),
     redirect_uri="http://127.0.0.1:8888/callback",
-    scope="user-read-currently-playing",
+    scope = "user-read-playback-state user-read-recently-played",
     cache_path=".spotify-cache"
 ))
 

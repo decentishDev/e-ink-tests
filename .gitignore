@@ -1,3 +1,4 @@
 secrets.py
 .cache
+.spotify-cache
 __pycache__
