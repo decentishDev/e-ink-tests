@@ -1,5 +1,4 @@
 import requests
-import geocoder
 import time
 import os
 import random
@@ -117,21 +116,13 @@ def fetch_unsplash_background(weather):
 # WEATHER FUNCTIONS
 # ---------------------------
 
-def get_coords(address):
-    g = geocoder.arcgis(address)
-    return g.latlng
-
 
 def get_weather(address):
     session = requests.Session()
 
-    coords = get_coords(address)
-    if coords is None:
-        return None
-
     url = (
         f"https://api.open-meteo.com/v1/forecast?"
-        f"latitude={coords[0]}&longitude={coords[1]}"
+        f"latitude=43.0722&longitude=89.4008"
         f"&daily=weathercode,temperature_2m_max,temperature_2m_min"
         f"&timezone=auto"
     )
@@ -416,19 +407,22 @@ def date_weather_spotify(sp):
     try:
         current = sp.current_user_playing_track()
 
-        if current and current.get("is_playing") and current.get("item"):
-            album = current["item"]["album"]
-            image_url = album["images"][0]["url"]
+        if current and current.get("item"):
+            track = current["item"]
+        else:
+            recent = sp.current_user_recently_played(limit=1)
+            if not recent or not recent.get("items"):
+                raise Exception("No recent tracks found")
+            track = recent["items"][0]["track"]
 
-            response = requests.get(image_url, timeout=20)
-            response.raise_for_status()
+        album = track["album"]
+        image_url = album["images"][0]["url"]
 
-            album_img = Image.open(BytesIO(response.content)).convert("RGB")
+        response = requests.get(image_url, timeout=20)
+        response.raise_for_status()
 
-            # ---------------------------
-            # SAVE LAST GOOD IMAGE TO DISK
-            # ---------------------------
-            album_img.save(LAST_ALBUM_PATH)
+        album_img = Image.open(BytesIO(response.content)).convert("RGB")
+        album_img.save(LAST_ALBUM_PATH)
 
     except Exception as e:
         print("Spotify error:", e)
