@@ -19,10 +19,6 @@ def wait_for_internet(host="8.8.8.8", port=53, timeout=5):
             print("Waiting for internet...")
             time.sleep(10)
 
-# ---------------------------
-# SET UP DISPLAY
-# ---------------------------
-
 inky_display = auto()
 WIDTH, HEIGHT = inky_display.resolution
 
@@ -32,7 +28,7 @@ if (WIDTH, HEIGHT) != (600, 448):
 inky_display.set_border(inky_display.BLACK)
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=secrets.spotify_client_id(), # secret :)
+    client_id=secrets.spotify_client_id(),
     client_secret=secrets.spotify_client_secret(),
     redirect_uri="http://127.0.0.1:8888/callback",
     scope = "user-read-playback-state user-read-recently-played",
