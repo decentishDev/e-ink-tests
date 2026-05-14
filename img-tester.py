@@ -12,5 +12,5 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     cache_path=".spotify-cache"
 ))
 
-img = displays.date_weather_spotify(sp)
+img = displays.last_spotify(sp)
 img.save("output_image.png")

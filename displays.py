@@ -508,3 +508,53 @@ def date_weather_spotify(sp):
     draw.text((x, y), weather_text, font=condition_font, fill=WHITE)
 
     return img
+
+
+def last_spotify(sp):
+    session = requests_session()
+
+    album_img = None
+
+    try:
+        current = sp.current_user_playing_track()
+
+        if current and current.get("item"):
+            track = current["item"]
+        else:
+            recent = sp.current_user_recently_played(limit=1)
+            if not recent or not recent.get("items"):
+                raise Exception("No recent tracks found")
+            track = recent["items"][0]["track"]
+
+        album = track["album"]
+        image_url = album["images"][0]["url"]
+
+        response = requests.get(image_url, timeout=20)
+        response.raise_for_status()
+
+        album_img = Image.open(BytesIO(response.content)).convert("RGB")
+        album_img.save(LAST_ALBUM_PATH)
+
+    except Exception as e:
+        print("Spotify error:", e)
+
+    if album_img is None:
+        if os.path.exists(LAST_ALBUM_PATH):
+            album_img = Image.open(LAST_ALBUM_PATH).convert("RGB")
+        else:
+            album_img = Image.new("RGB", (WIDTH, HEIGHT), (30, 30, 30))
+
+    # Resize to fill WIDTH x HEIGHT, cropping as needed
+    scale = max(WIDTH / album_img.width, HEIGHT / album_img.height)
+    new_width = int(album_img.width * scale)
+    new_height = int(album_img.height * scale)
+    resized = album_img.resize((new_width, new_height), Image.LANCZOS)
+
+    # Crop to center
+    left = (new_width - WIDTH) // 2
+    top = (new_height - HEIGHT) // 2
+    right = left + WIDTH
+    bottom = top + HEIGHT
+    cropped = resized.crop((left, top, right, bottom))
+
+    return cropped
